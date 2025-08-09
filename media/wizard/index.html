@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; img-src https: data:; style-src {{cspSource}} 'unsafe-inline'; script-src {{cspSource}};">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dagger.js App Wizard</title>
+    <link rel="stylesheet" href="{{styleUri}}">
+    <script type="module" stc="../../framework/dagger.release.js" defer></script>
+  </head>
+  <body>
+    <h2 style="margin:0 0 12px;">Create dagger.js Application1</h2>
+
+    <div class="row">
+      <label>App Name</label><br/>
+      <input id="appName" placeholder="my-dagger-app" />
+      <div class="hint">Only letters/numbers/underscores/hyphens are allowed, other characters will be replaced with <code>-</code>.</div>
+    </div>
+
+    <div class="row">
+      <label>Template</label><br/>
+      <select id="template">
+        <option value="basic" selected>basic (minimal example)</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <button id="create">Create</button>
+    </div>
+
+    <script src="{{scriptUri}}"></script>
+  </body>
+</html>

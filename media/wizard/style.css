@@ -1,0 +1,27 @@
+body {
+  font-family: ui-sans-serif, system-ui;
+  padding: 16px;
+}
+
+.row {
+  margin: 10px 0;
+}
+
+input,
+select {
+  width: 320px;
+  padding: 6px;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid #7774;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 6px;
+}
