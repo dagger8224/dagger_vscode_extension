@@ -1,10 +1,11 @@
 {
   "name": "daggerjs-app-wizard",
-  "displayName": "Dagger.js App Wizard",
-  "publisher": "Tony Peakman",
+  "displayName": "dagger.js App Wizard",
+  "publisher": "peakman",
   "version": "0.0.1",
+  "repository": "https://github.com/dagger8224/dagger_vscode_extension",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.86.0"
   },
   "categories": [
     "Other"
@@ -18,14 +19,14 @@
     "commands": [
       {
         "command": "dagger.createApp",
-        "title": "Dagger.js: Create App"
+        "title": "dagger.js: Create App"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "dagger",
-          "title": "Dagger",
+          "title": "dagger",
           "icon": "media/dagger.svg"
         }
       ]
@@ -34,7 +35,7 @@
       "dagger": [
         {
           "id": "dagger.sidebar",
-          "name": "Dagger Wizard"
+          "name": "dagger Wizard"
         }
       ]
     }

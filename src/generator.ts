@@ -6,21 +6,20 @@ type CreateOpts = {
   extensionUri: vscode.Uri;
   targetDir: string;
   appName: string;
-  template: 'basic';
+  type: 'basic';
 };
 
 export async function createDaggerApp(opts: CreateOpts): Promise<string> {
-  const { extensionUri, targetDir, appName, template } = opts;
+  const { extensionUri, targetDir, appName, type } = opts;
 
-  const safeName = appName.replace(/[^\w\-]/g, '-');
-  const dest = path.join(targetDir, safeName);
+  const dest = path.join(targetDir, appName);
   if (fs.existsSync(dest)) {
-    throw new Error(`目标目录已存在：${dest}`);
+    vscode.window.showErrorMessage(`The target directory "${ dest }" already exists!`);
   }
   fs.mkdirSync(dest, { recursive: true });
 
-  const templateRoot = vscode.Uri.joinPath(extensionUri, 'templates', template);
-  await copyDir(templateRoot.fsPath, dest, { APP_NAME: safeName });
+  const templateRoot = vscode.Uri.joinPath(extensionUri, 'templates', type);
+  await copyDir(templateRoot.fsPath, dest, { APP_NAME: appName });
 
   return dest;
 }

@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('dagger.createApp', async () => {
       const panel = vscode.window.createWebviewPanel(
         'daggerCreateApp',
-        'Dagger.js - Create App',
+        'dagger.js - Create App',
         vscode.ViewColumn.One,
         { enableScripts: true }
       );
@@ -20,13 +20,12 @@ export function activate(context: vscode.ExtensionContext) {
           try {
             const targetDir = await pickTargetFolder();
             if (!targetDir) return;
-            const appName = (msg.appName || 'my-dagger-app').trim();
-            const template = (msg.template || 'basic') as 'basic';
+            const { appName, type } = msg.payload;
             const createdPath = await createDaggerApp({
               extensionUri: context.extensionUri,
               targetDir,
               appName,
-              template
+              type
             });
             const open = await vscode.window.showInformationMessage(
               `dagger.js application created at ${createdPath}`, 'Open folder'
@@ -55,19 +54,18 @@ function getWizardHtml(panel: vscode.WebviewPanel, ctx: vscode.ExtensionContext)
   // Allow loading local resources from media/
   panel.webview.options = {
     enableScripts: true,
-    localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, 'media')]
+    localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, 'framework'), vscode.Uri.joinPath(ctx.extensionUri, 'media')]
   };
 
   const wizardRoot = vscode.Uri.joinPath(ctx.extensionUri, 'media/wizard');
-  const htmlPath = vscode.Uri.joinPath(wizardRoot, 'index.html');
-  const scriptUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(wizardRoot, 'script.js'));
-  const styleUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(wizardRoot, 'style.css'));
 
   // Read HTML and inject CSP source + script URI
-  const html = require('fs').readFileSync(htmlPath.fsPath, 'utf8')
+  const html = require('fs').readFileSync(vscode.Uri.joinPath(wizardRoot, 'index.html').fsPath, 'utf8')
     .replace(/\{\{cspSource\}\}/g, panel.webview.cspSource)
-    .replace(/\{\{scriptUri\}\}/g, String(scriptUri))
-    .replace(/\{\{styleUri\}\}/g, String(styleUri));
+    .replace(/\{\{scriptUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(wizardRoot, 'script.js'))))
+    .replace(/\{\{styleUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(wizardRoot, 'style.css'))))
+    // .replace(/\{\{modulesUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(wizardRoot,'modules.json'))))
+    .replace(/\{\{daggerUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, 'framework/dagger.release.js'))));
 
   return html;
 }
@@ -77,8 +75,7 @@ async function pickTargetFolder(): Promise<string | undefined> {
   const res = await vscode.window.showOpenDialog({
     canSelectMany: false,
     canSelectFiles: false,
-    canSelectFolders: true,
-    openLabel: 'Select target folder'
+    canSelectFolders: true
   });
   return res?.[0]?.fsPath;
 }

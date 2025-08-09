@@ -1148,31 +1148,8 @@ export default (({ asserter, logger, groupStarter, groupEnder, warner } = ((mess
     'SL-TEXTAREA': { value: slUpdate },
     'SL-TOOLTIP': { open: slShow },
     'SL-TREE-ITEM': { expanded: ['sl-expand', 'sl-collapse'] }, // selected
-    // web-awesome
-    'SL-ALERT': { open: slShow },
-    'SL-ANIMATION': { play: ['sl-start', 'sl-finish', 'sl-cancel'] },
-    // 'SL-ANIMATED-IMAGE': { play: true },
-    'SL-BUTTON': { focus: slFocus },
-    'SL-CHECKBOX': { checked: slChange, indeterminate: slChange, focus: slFocus },
-    'SL-COLOR-PICKER': { value: slUpdate, format: slUpdate, focus: slFocus },
-    'SL-DETAILS': { open: slShow },
-    'SL-DIALOG': { open: slShow },
-    'SL-DRAWER': { open: slShow },
-    'SL-DROPDOWN': { open: slShow },
-    'SL-ICON-BUTTON': { focus: slFocus },
-    'SL-IMAGE-COMPARER': { position: slChange },
-    'SL-INPUT': { value: slUpdate },
-    'WA-SELECT': { value: true, focus: slFocus, open: slShow },
-    'SL-RADIO': { focus: slFocus },
-    'SL-RADIO-BUTTON': { focus: slFocus },
-    'SL-RADIO-GROUP': { value: slChange },
-    'SL-RANGE': { value: slUpdate, focus: slFocus },
-    'SL-RATING': { value: slChange },
-    'SL-SPLIT-PANEL': { position: ['sl-reposition'] },
-    'SL-SWITCH': { checked: slChange, focus: slFocus },
-    'SL-TEXTAREA': { value: slUpdate },
-    'SL-TOOLTIP': { open: slShow },
-    'SL-TREE-ITEM': { expanded: ['sl-expand', 'sl-collapse'] }
+    // wired-elements
+    'WIRED-INPUT': { value: true },
 }))(), dataBinder = (directives, value, fields, event) => directives.eventHandlers.push(directiveResolver(`Object.is(${ value }, _$data_) || (${ value } = _$data_)`, Object.assign({ event }, fields), '$node, _$data_')), directiveAttributeResolver = (node, name, value = '') => {
     daggerOptions.debugDirective && node.setAttribute(`${ directiveType[name[0]] || 'meta' }-${ decodeURIComponent(name.substring(1)).trim().replace(/\#/g, '__').replace(/:/g, '_').replace(/[^\w]/g, '-') }-debug`, value);
 }, directiveResolver = ((baseSignature = '$module, $scope') => (expression, fields = {}, signature = '$node') => {

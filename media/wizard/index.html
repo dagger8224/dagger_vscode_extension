@@ -3,32 +3,118 @@
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'none'; img-src https: data:; style-src {{cspSource}} 'unsafe-inline'; script-src {{cspSource}};">
+          content="default-src 'none'; img-src https: data:; style-src {{cspSource}} 'unsafe-inline';  connect-src {{cspSource}}; script-src {{cspSource}} data: 'unsafe-inline' 'unsafe-eval';">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dagger.js App Wizard</title>
+    <title>dagger.js App Wizard</title>
     <link rel="stylesheet" href="{{styleUri}}">
-    <script type="module" stc="../../framework/dagger.release.js" defer></script>
+    <style>[dg-cloak] { display: none !important; }</style>
+    <script type="module" crossorigin="anonymous" src="{{daggerUri}}" defer></script>
+    <script type="dagger/modules">
+      {
+        "_": "{{scriptUri}}"
+      }
+    </script>
   </head>
-  <body>
-    <h2 style="margin:0 0 12px;">Create dagger.js Application1</h2>
-
+  <body dg-cloak +load>
+    <h1>Create dagger.js Application</h1>
     <div class="row">
-      <label>App Name</label><br/>
-      <input id="appName" placeholder="my-dagger-app" />
-      <div class="hint">Only letters/numbers/underscores/hyphens are allowed, other characters will be replaced with <code>-</code>.</div>
+      <label required>App Name: </label>
+      <br/>
+      <input
+        type="text"
+        placeholder="enter the app name"
+        +load="{ invalid: false }"
+        *value#trim="appName"
+        *invalid#bool
+        *watch="validateAppName(appName, $scope)" />
+      <div class="hint">Only letters/numbers/underscores/hyphens are allowed, 3 characters at least.</div>
     </div>
-
     <div class="row">
-      <label>Template</label><br/>
-      <select id="template">
-        <option value="basic" selected>basic (minimal example)</option>
+      <label>Select the mode of dagger.js:</label>
+      <br/>
+      <select *value="mode">
+        <option value="debug">debug</option>
+        <option value="debug.min">minimized debug</option>
+        <option value="release">release</option>
+        <option value="release.min">minimized release</option>
       </select>
+      <div class="hint">It is recommended to use debug mode in development and release mode in production.</div>
     </div>
-
     <div class="row">
-      <button id="create">Create</button>
+      <label>Select the version of dagger.js:</label>
+      <br/>
+      <input
+        type="text"
+        placeholder="enter the version of dagger.js"
+        +load="{ invalid: false }"
+        *value="version"
+        *invalid#bool
+        *watch="validateVersion(version, $scope)" />
+      <div class="hint">The version format should be like "1.0.0".</div>
+    </div>
+    <div class="row">
+      <label>Specify the rootSelectors:</label>
+      <br/>
+      <input
+        type="text"
+        placeholder="enter the root selectors"
+        *value="rootSelectors" />
+      <div class="hint">The root selectors are separated by comma.</div>
+    </div>
+    <div class="row">
+      <label>Include Module Configuration:</label>
+      <input
+        type="checkbox"
+        *checked="includeModuleConfig" />
+      <div class="hint">This will generate an empty module configuration file.</div>
+    </div>
+    <div class="row">
+      <label>Include Router Configuration:</label>
+      <input
+        type="checkbox"
+        *checked="includeRouterConfig" />
+      <div class="hint">This will generate a default router configuration file.</div>
+    </div>
+    <template *exist="includeRouterConfig">
+      <div class="row">
+        <label>Router Mode:</label>
+        <br/>
+        <select *value="routerMode">
+          <option value="hash">hash</option>
+          <option value="history">history</option>
+        </select>
+        <div class="hint">The router mode determines the way the router works, hash or history.</div>
+      </div>
+    </template>
+    <template *exist="['debug', 'debug.min'].includes(mode)">
+      <div class="row">
+        <label>Enable integrity validation:</label>
+        <input
+          type="checkbox"
+          *checked="integrity" />
+      </div>
+      <div class="row">
+        <label>Show debug directive:</label>
+        <input
+          type="checkbox"
+          *checked="debugDirective" />
+      </div>
+      <div class="row">
+        <label>Show log messages:</label>
+        <input
+          type="checkbox"
+          *checked="log" />
+      </div>
+      <div class="row">
+        <label>Show warning messages:</label>
+        <input
+          type="checkbox"
+          *checked="messages" />
+      </div>
+    </template>
+    <div class="row">
+      <button +click="createApp($scope)" *disabled="!creatable">Create</button>
     </div>
 
-    <script src="{{scriptUri}}"></script>
   </body>
 </html>

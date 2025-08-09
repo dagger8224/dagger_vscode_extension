@@ -35,9 +35,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           </style>
         </head>
         <body>
-          <h3 style="margin-top:0;">Dagger.js 向导</h3>
+          <h3 style="margin-top:0;">dagger.js 向导</h3>
           <button id="open">创建新应用</button>
-          <div class="hint">基于模板快速生成 Dagger.js 应用。</div>
+          <div class="hint">基于模板快速生成 dagger.js 应用。</div>
           <script nonce="${nonce}">
             const vscode = acquireVsCodeApi();
             document.getElementById('open').addEventListener('click', () => {
