@@ -20,12 +20,10 @@ export function activate(context: vscode.ExtensionContext) {
           try {
             const targetDir = await pickTargetFolder();
             if (!targetDir) return;
-            const { appName, type } = msg.payload;
             const createdPath = await createDaggerApp({
-              extensionUri: context.extensionUri,
+              // extensionUri: context.extensionUri,
               targetDir,
-              appName,
-              type
+              payload: msg.payload
             });
             const open = await vscode.window.showInformationMessage(
               `dagger.js application created at ${createdPath}`, 'Open folder'

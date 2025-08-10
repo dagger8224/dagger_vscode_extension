@@ -4,12 +4,16 @@ export const load = () => ({
   version: '0.9.21',
   rootSelectors: 'title, body',
   routerMode: 'hash',
-  integrity: false,
-  debugDirective: true,
-  log: true,
-  warning: true,
-  includeModuleConfig: true,
-  includeRouterConfig: true,
+  prefix: '#',
+  defaultRoute: '/',
+  enableGlobalScript: true,
+  enableGlobalStyle: true,
+  enableIntegrity: false,
+  enableDebugDirective: true,
+  enableLog: true,
+  enableWarning: true,
+  enableModuleConfig: true,
+  enableRouterConfig: true,
   creatable: true
 });
 
@@ -25,5 +29,5 @@ export const validateVersion = (version, $scope) => {
 
 export const createApp = $scope => {
   const vscode = acquireVsCodeApi();
-  vscode.postMessage({ type: 'create', payload: $scope });
+  vscode.postMessage({ type: 'create', payload: Object.assign({}, $scope) });
 };

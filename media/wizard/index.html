@@ -50,7 +50,7 @@
         *value="version"
         *invalid#bool
         *watch="validateVersion(version, $scope)" />
-      <div class="hint">The version format should be like "1.0.0".</div>
+      <div class="hint">The version format should be in the format of "major.minor.patch", e.g. "1.0.0".</div>
     </div>
     <div class="row">
       <label>Specify the rootSelectors:</label>
@@ -62,20 +62,58 @@
       <div class="hint">The root selectors are separated by comma.</div>
     </div>
     <div class="row">
-      <label>Include Module Configuration:</label>
+      <label>Enable global script.js:</label>
       <input
         type="checkbox"
-        *checked="includeModuleConfig" />
+        *checked="enableGlobalScript" />
+    </div>
+    <div class="row">
+      <label>Enable global style.css:</label>
+      <input
+        type="checkbox"
+        *checked="enableGlobalStyle" />
+    </div>
+    <template *exist="['debug', 'debug.min'].includes(mode)">
+      <div class="row">
+        <label>Enable integrity validation:</label>
+        <input
+          type="checkbox"
+          *checked="enableIntegrity" />
+      </div>
+      <div class="row">
+        <label>Enable debug directive:</label>
+        <input
+          type="checkbox"
+          *checked="enableDebugDirective" />
+      </div>
+      <div class="row">
+        <label>Enable log messages:</label>
+        <input
+          type="checkbox"
+          *checked="enableLog" />
+      </div>
+      <div class="row">
+        <label>Enable warning messages:</label>
+        <input
+          type="checkbox"
+          *checked="enableWarning" />
+      </div>
+    </template>
+    <div class="row">
+      <label>Add Module Configuration:</label>
+      <input
+        type="checkbox"
+        *checked="enableModuleConfig" />
       <div class="hint">This will generate an empty module configuration file.</div>
     </div>
     <div class="row">
-      <label>Include Router Configuration:</label>
+      <label>Add Router Configuration:</label>
       <input
         type="checkbox"
-        *checked="includeRouterConfig" />
+        *checked="enableRouterConfig" />
       <div class="hint">This will generate a default router configuration file.</div>
     </div>
-    <template *exist="includeRouterConfig">
+    <template *exist="enableRouterConfig">
       <div class="row">
         <label>Router Mode:</label>
         <br/>
@@ -85,31 +123,23 @@
         </select>
         <div class="hint">The router mode determines the way the router works, hash or history.</div>
       </div>
-    </template>
-    <template *exist="['debug', 'debug.min'].includes(mode)">
       <div class="row">
-        <label>Enable integrity validation:</label>
+        <label>Router prefix:</label>
+        <br/>
         <input
-          type="checkbox"
-          *checked="integrity" />
+          type="text"
+          placeholder="enter the router prefix"
+          *value="prefix" />
+        <div class="hint">The prefix is used to specify the base path for the router.</div>
       </div>
       <div class="row">
-        <label>Show debug directive:</label>
+        <label>Default router path:</label>
+        <br/>
         <input
-          type="checkbox"
-          *checked="debugDirective" />
-      </div>
-      <div class="row">
-        <label>Show log messages:</label>
-        <input
-          type="checkbox"
-          *checked="log" />
-      </div>
-      <div class="row">
-        <label>Show warning messages:</label>
-        <input
-          type="checkbox"
-          *checked="messages" />
+          type="text"
+          placeholder="enter the default router path"
+          *value="defaultRoute" />
+        <div class="hint">The default route is the path that the router will redirect to when the target router is invalid.</div>
       </div>
     </template>
     <div class="row">
