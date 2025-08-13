@@ -1,7 +1,6 @@
 # dagger.js App Wizard
 
-### Quick Launch The Wizard
-[🚀 Create a dagger App](command:dagger.createApp)
+## 🎯 Overview
 
 > A VS Code extension for quickly creating dagger.js applications with an one-time creation wizard (Webview Panel) and a persistent sidebar entry (Webview View).  
 > Ideal for bootstrapping demo projects, prototypes, or learning examples.

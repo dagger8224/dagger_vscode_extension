@@ -1,0 +1,60 @@
+body {
+  font-family: ui-sans-serif, system-ui;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 28px;
+  margin: 24px 0;
+}
+
+.row {
+  margin-top: 15px;
+}
+
+.row label {
+  display: inline-block;
+  font-size: 16px;
+  text-align: left;
+  margin-bottom: 6px;
+  width: 240px;
+}
+
+input,
+select {
+  padding: 6px;
+}
+
+input {
+  width: 300px;
+  height: 22px;
+}
+
+select {
+  width: 316px;
+  height: 36px;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid #7774;
+  border-radius: 6px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+[required]::before {
+  content: "*";
+  color: rgb(202, 48, 48);
+  margin-right: 4px;
+}
+
+[invalid] {
+  background-color: #ffb6c1;
+}

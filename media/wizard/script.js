@@ -14,20 +14,21 @@ export const load = () => ({
   enableWarning: true,
   enableModuleConfig: true,
   enableRouterConfig: true,
-  creatable: true
+  isValid: true
 });
 
 export const validateAppName = (appName, $scope) => {
   $scope.invalid = !/^[a-zA-Z0-9_-]{3,}$/.test(appName);
-  $scope.creatable &&= !$scope.invalid;
+  $scope.isValid &&= !$scope.invalid;
 };
 
 export const validateVersion = (version, $scope) => {
   $scope.invalid = !/^[0-9]+\.[0-9]+\.[0-9]+$/.test(version);
-  $scope.creatable &&= !$scope.invalid;
+  $scope.isValid &&= !$scope.invalid;
 };
 
+const vscode = acquireVsCodeApi();
+
 export const createApp = $scope => {
-  const vscode = acquireVsCodeApi();
   vscode.postMessage({ type: 'create', payload: Object.assign({}, $scope) });
 };

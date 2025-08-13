@@ -2,7 +2,7 @@
   "name": "daggerjs-app-wizard",
   "displayName": "dagger.js App Wizard",
   "publisher": "peakman",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": "https://github.com/dagger8224/dagger_vscode_extension",
   "engines": {
     "vscode": "^1.86.0"
@@ -13,13 +13,34 @@
   "main": "./out/extension.js",
   "activationEvents": [
     "onCommand:dagger.createApp",
-    "onView:dagger.sidebar"
+    "onCommand:dagger.explorer.parseFolder",
+    "onCommand:dagger.explorer.parseFile",
+    "onCommand:dagger.explorer.createNamespace"
   ],
   "contributes": {
     "commands": [
       {
         "command": "dagger.createApp",
         "title": "dagger.js: Create App"
+      },
+      {
+        "command": "dagger.explorer.parseFolder",
+        "title": "Parse the current folder"
+      },
+      {
+        "command": "dagger.explorer.parseFile",
+        "title": "Parse the current file"
+      },
+      {
+        "command": "dagger.explorer.createNamespace",
+        "title": "Create a new namespace"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "dagger.submenu",
+        "label": "dagger.js Tools",
+        "icon": { "light": "media/dagger.svg", "dark": "media/dagger.svg" }
       }
     ],
     "viewsContainers": {
@@ -36,6 +57,38 @@
         {
           "id": "dagger.sidebar",
           "name": "dagger Wizard"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dagger.sidebar",
+        "contents": "Welcome to daagger.js app wizard!\n\n[➕ Create](command:dagger.createApp)"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "dagger.submenu",
+          "group": "navigation@10",
+          "when": "filesExplorerFocus && resourceFilename != dagger.js && resourceFilename != dagger.min.js && resourceFilename != dagger.release.js && resourceFilename != dagger.release.min.js"
+        }
+      ],
+      "dagger.submenu": [
+        {
+          "command": "dagger.explorer.parseFolder",
+          "group": "group1",
+          "when": "resourceScheme == file && explorerResourceIsFolder == true"
+        },
+        {
+          "command": "dagger.explorer.parseFile",
+          "group": "group1",
+          "when": "resourceScheme == file && explorerResourceIsFolder != true"
+        },
+        {
+          "command": "dagger.explorer.createNamespace",
+          "group": "group1",
+          "when": "resourceScheme == file && explorerResourceIsFolder == true"
         }
       ]
     }

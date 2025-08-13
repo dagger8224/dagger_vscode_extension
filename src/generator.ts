@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { debug } from 'console';
 
 type CreateOpts = {
   targetDir: string;
@@ -26,6 +25,7 @@ export async function createDaggerApp(opts: CreateOpts): Promise<string> {
   const dest = path.join(targetDir, payload.appName);
   if (fs.existsSync(dest)) {
     vscode.window.showErrorMessage(`The target directory "${ dest }" already exists!`);
+    return '';
   }
   fs.mkdirSync(dest, { recursive: true });
 
@@ -43,15 +43,23 @@ export async function createDaggerApp(opts: CreateOpts): Promise<string> {
   } else if (mode ==='release.min') {
     daggerFileName = 'dagger.release.min.js';
   }
-  fetch(`https://cdn.jsdelivr.net/npm/@peakman/dagger.js@${ payload.version }/${ daggerFileName }`)
+  return fetch(`https://cdn.jsdelivr.net/npm/@peakman/dagger.js@${ payload.version }/${ daggerFileName }`)
    .then(res => res.text(), err => {
       vscode.window.showErrorMessage(`Failed to fetch ${ daggerFileName } (V${ payload.version }) from CDN: ${ err }`);
    })
-   .then(data => writeFile(path.join(frameworkDir, daggerFileName), String(data)));
-
-  // write index.html
-  
-  writeFile(path.join(dest, 'index.html'), `
+   .then(data => {
+    writeFile(path.join(frameworkDir, daggerFileName), String(data));
+    const structure = {
+      entry: 'index.html',
+      options: 'configs/options.json',
+      readme: 'README.md',
+      style: '',
+      script: '',
+      routers: '',
+      modules: ''
+    };
+    // write index.html
+    writeFile(path.join(dest, 'index.html'), `
 <!doctype html>
 <html lang="en">
   <head>
@@ -78,11 +86,13 @@ export async function createDaggerApp(opts: CreateOpts): Promise<string> {
 `);
   // write style.css
   if (payload.enableGlobalStyle) {
+    structure.style = 'style.css';
     writeFile(path.join(dest,'style.css'), `/* Add global CSS here */
 `);
   }
   // write script.js
   if (payload.enableGlobalScript) {
+    structure.script = 'script.js';
     writeFile(path.join(dest,'script.js'), `/* Add global script here */
 `);
   }
@@ -116,6 +126,7 @@ ${ JSON.stringify(payload, null, 2) }
 
   // write modules.json
   if (payload.enableModuleConfig) {
+    structure.modules = 'configs/modules.json';
     writeFile(path.join(configsDir, 'modules.json'), `{
 }
 `);
@@ -123,6 +134,7 @@ ${ JSON.stringify(payload, null, 2) }
 
   // write routers.json
   if (payload.enableRouterConfig) {
+    structure.routers = 'configs/routers.json';
     writeFile(path.join(configsDir, 'routers.json'), `
   ${ JSON.stringify({
     mode: payload.routerMode,
@@ -136,6 +148,17 @@ ${ JSON.stringify(payload, null, 2) }
   }, null, 2) }
 `);
   }
-
+  // write the hidden config file
+  const currentTime = new Date().toISOString();
+  writeFile(path.join(dest, 'dagger.application.config.json'), JSON.stringify({
+    appName: payload.appName,
+    createTime: currentTime,
+    updateTime: currentTime,
+    creator: 'vscode:dagger_app_wizard',
+    version: '0.0.3', // version
+    parameters: payload,
+    structure
+  }, null, 2));
   return dest;
+  });
 }

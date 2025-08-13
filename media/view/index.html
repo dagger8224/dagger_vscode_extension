@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; img-src https: data:; style-src {{cspSource}} 'unsafe-inline';  connect-src {{cspSource}}; script-src {{cspSource}} data: 'unsafe-inline' 'unsafe-eval';">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>dagger.js module View</title>
+    <link rel="stylesheet" href="{{styleUri}}">
+    <style>[dg-cloak] { display: none !important; }</style>
+    <script type="module" crossorigin="anonymous" src="{{daggerUri}}" defer></script>
+    <script type="dagger/modules">
+      {
+        "_": "{{scriptUri}}"
+      }
+    </script>
+    <script type="dagger/json" id="meta">
+      {{json}}
+    </script>
+  </head>
+  <body dg-cloak>
+    <h2>The parsing result:</h2>
+    ${ meta.textContent }
+  </body>
+</html>
