@@ -16,37 +16,6 @@ const styleParser = () => {};
 const jsonParser = () => {};
 
 export function activate(context: vscode.ExtensionContext) {
-  let basePath = '';
-  let configs = null;
-  try {
-    const folders = vscode.workspace.workspaceFolders;
-    if (folders && folders.length > 0) {
-      basePath = folders[0].uri.fsPath;
-      const configFile = path.join(basePath, 'dagger.application.config.json');
-      if (fs.existsSync(configFile)) {
-        configs = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-  if (!configs) {
-      vscode.window.showErrorMessage('Please open a dagger.js workspace folder first.');
-      return;
-  }
-  const structure = configs.structure;
-  const resolvedStructure: Record<string, string> = {};
-  Object.keys(structure).forEach(key => {
-    const relativePath = structure[key];
-    if (relativePath) {
-      const fullPath = path.join(basePath, relativePath);
-      if (!fs.existsSync(fullPath)) {
-        vscode.window.showErrorMessage(`Path ${fullPath} does not exist.`);
-      } else {
-        resolvedStructure[fullPath] = key;
-      }
-    }
-  });
   // Command: open one-off wizard
   context.subscriptions.push(
     vscode.commands.registerCommand('dagger.createApp', async () => {
@@ -84,6 +53,37 @@ export function activate(context: vscode.ExtensionContext) {
       });
     })
   );
+  let basePath = '';
+  let configs = null;
+  try {
+    const folders = vscode.workspace.workspaceFolders;
+    if (folders && folders.length > 0) {
+      basePath = folders[0].uri.fsPath;
+      const configFile = path.join(basePath, 'dagger.application.config.json');
+      if (fs.existsSync(configFile)) {
+        configs = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  if (!configs) {
+      vscode.window.showErrorMessage('Please open a dagger.js workspace folder first.');
+      return;
+  }
+  const structure = configs.structure;
+  const resolvedStructure: Record<string, string> = {};
+  Object.keys(structure).forEach(key => {
+    const relativePath = structure[key];
+    if (relativePath) {
+      const fullPath = path.join(basePath, relativePath);
+      if (!fs.existsSync(fullPath)) {
+        vscode.window.showErrorMessage(`Path ${fullPath} does not exist.`);
+      } else {
+        resolvedStructure[fullPath] = key;
+      }
+    }
+  });
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'dagger.explorer.parseFolder', async (uri: vscode.Uri) => {
