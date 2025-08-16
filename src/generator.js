@@ -41,13 +41,15 @@ exports.createDaggerApp = (context, targetDir, payload) => {
    .then(data => {
     writeFile(path.join(frameworkDir, daggerFileName), data);
     const structure = {
-      entry: 'index.html',
-      options: 'configs/options.json',
-      readme: 'README.md',
-      style: '',
-      script: '',
-      routers: '',
-      modules: ''
+      'application.configs': "dagger.application.config.json",
+      'application.entry': 'index.html',
+      'application.options': 'configs/options.json',
+      'application.routers': '',
+      'application.modules': '',
+      'application.readme': 'README.md',
+      'global.script': '',
+      'global.style': '',
+      
     };
     // write index.html
     writeFile(path.join(dest, 'index.html'), `
@@ -77,19 +79,20 @@ exports.createDaggerApp = (context, targetDir, payload) => {
 `);
   // write style.css
   if (payload.enableGlobalStyle) {
-    structure.style = 'style.css';
+    structure['global.style'] = 'style.css';
     writeFile(path.join(dest,'style.css'), `/* Add global CSS here */
 `);
   }
   // write script.js
   if (payload.enableGlobalScript) {
-    structure.script = 'script.js';
+    structure['global.script'] = 'script.js';
     writeFile(path.join(dest,'script.js'), `/* Add global script here */
 `);
   }
   // write README.md
   writeFile(path.join(dest, 'README.md'), `
 # ${ payload.appName }  
+## The application is created by the Dagger VSCode Extension, please avoid modifying the file structure manually.  
 ## The configuration used to create & initialize this application is as follows:  
 \`\`\`
 ${ JSON.stringify(payload, null, 2) }
@@ -117,7 +120,7 @@ ${ JSON.stringify(payload, null, 2) }
 
   // write modules.json
   if (payload.enableModuleConfig) {
-    structure.modules = 'configs/modules.json';
+    structure['application.modules'] = 'configs/modules.json';
     writeFile(path.join(configsDir, 'modules.json'), `{
 }
 `);
@@ -125,7 +128,7 @@ ${ JSON.stringify(payload, null, 2) }
 
   // write routers.json
   if (payload.enableRouterConfig) {
-    structure.routers = 'configs/routers.json';
+    structure['application.routers'] = 'configs/routers.json';
     writeFile(path.join(configsDir, 'routers.json'), `
   ${ JSON.stringify({
     mode: payload.routerMode,

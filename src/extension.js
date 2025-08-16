@@ -99,7 +99,12 @@ const activate = context => {
         if (stats.isDirectory()) {
           json.type = 'directory';
         } else if (stats.isFile()) {
-          role = resolvedStructure[uri.fsPath] || '';
+          const role = resolvedStructure[uri.fsPath] || '';
+          if (!role) {
+            vscode.window.showErrorMessage(`File ${uri.fsPath} is not registered in the current application.`);
+            return;
+          }
+          json.role = role;
           json.type = 'file';
           try {
             json.content = fs.readFileSync(uri.fsPath, 'utf8');
@@ -107,12 +112,22 @@ const activate = context => {
             json.valid = false;
             json.content = '(binary or unreadable as utf8)';
           }
-          if (json.role === 'entry') {
-
-          } else if (json.role === 'options') {
+          if (role === 'application.configs') {
+            json.data = {
+              title: 'Application Configs',
+              sbutitle: 'Save',
+              html: '<button +click="openView()">openView</button>'
+            };
+          } else if (role === 'application.entry') {
+          } else if (role === 'application.options') {
+          } else if (role === 'application.routers') {
+          } else if (role === 'application.modules') {
+          } else if (role === 'application.readme') {
+          } else if (role === 'global.script') {
+          } else if (role === 'global.style') {
             
           } else {
-            
+            vscode.window.showErrorMessage(`Unsupported role ${role} for file ${uri.fsPath}`);
           }
         }
         const panel = vscode.window.createWebviewPanel(
