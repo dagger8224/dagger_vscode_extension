@@ -18,8 +18,10 @@
       {{json}}
     </script>
   </head>
-  <body dg-cloak>
-    <h2>The parsing result:</h2>
-    ${ meta.textContent }
+  <body dg-cloak +load="load(meta.textContent)">
+    <h2>${ data.title }</h2>
+    <h3>${ data.subtitle }</h3>
+    <a +click="openView(path, 'raw')">${ path }</a>
+    <p *html="data.html"></p>
   </body>
 </html>
