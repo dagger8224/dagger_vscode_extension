@@ -1,27 +1,18 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-
-type CreateOpts = {
-  targetDir: string;
-  payload: any;
-};
+const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
 
 /*
-function isBinary(filename: string) {
-  return /(\.png|\.jpg|\.jpeg|\.gif|\.webp|\.ico|\.woff|\.woff2|\.ttf)$/i.test(filename);
-}
+const isBinary = filename => /(\.png|\.jpg|\.jpeg|\.gif|\.webp|\.ico|\.woff|\.woff2|\.ttf)$/i.test(filename);
 */
 
-function writeFile(file: string, content: string) {
+const writeFile = (file, content) => {
   if (!fs.existsSync(file)) {
     fs.writeFileSync(file, content, 'utf8');
   }
-}
+};
 
-export async function createDaggerApp(opts: CreateOpts): Promise<string> {
-  const { targetDir, payload } = opts;
-
+exports.createDaggerApp = (context, targetDir, payload) => {
   const dest = path.join(targetDir, payload.appName);
   if (fs.existsSync(dest)) {
     vscode.window.showErrorMessage(`The target directory "${ dest }" already exists!`);
@@ -48,7 +39,7 @@ export async function createDaggerApp(opts: CreateOpts): Promise<string> {
       vscode.window.showErrorMessage(`Failed to fetch ${ daggerFileName } (V${ payload.version }) from CDN: ${ err }`);
    })
    .then(data => {
-    writeFile(path.join(frameworkDir, daggerFileName), String(data));
+    writeFile(path.join(frameworkDir, daggerFileName), data);
     const structure = {
       entry: 'index.html',
       options: 'configs/options.json',
@@ -109,7 +100,7 @@ ${ JSON.stringify(payload, null, 2) }
   fs.mkdirSync(configsDir, { recursive: true });
 
   // write options.json
-  const rootSelectors = payload.rootSelectors.split(',').map((s: any) => s.trim());
+  const rootSelectors = payload.rootSelectors.split(',').map(s => s.trim());
   if (['debug', 'debug.min'].includes(payload.mode)) {
     writeFile(path.join(configsDir, 'options.json'), JSON.stringify({
       rootSelectors,
@@ -150,15 +141,17 @@ ${ JSON.stringify(payload, null, 2) }
   }
   // write the hidden config file
   const currentTime = new Date().toISOString();
+  const packageJsonPath = path.join(context.extensionPath, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
   writeFile(path.join(dest, 'dagger.application.config.json'), JSON.stringify({
     appName: payload.appName,
     createTime: currentTime,
     updateTime: currentTime,
     creator: 'vscode:dagger_app_wizard',
-    version: '0.0.3', // version
+    version: packageJson.version,
     parameters: payload,
     structure
   }, null, 2));
   return dest;
   });
-}
+};

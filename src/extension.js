@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import { createDaggerApp } from './generator';
+const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
+const { createDaggerApp } = require('./generator');
 
 // const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -15,7 +15,7 @@ const scriptParser = () => {};
 const styleParser = () => {};
 const jsonParser = () => {};
 
-export function activate(context: vscode.ExtensionContext) {
+const activate = context => {
   // Command: open one-off wizard
   context.subscriptions.push(
     vscode.commands.registerCommand('dagger.createApp', async () => {
@@ -33,11 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
           try {
             const targetDir = await pickTargetFolder();
             if (!targetDir) return;
-            const createdPath = await createDaggerApp({
-              // extensionUri: context.extensionUri,
-              targetDir,
-              payload: msg.payload
-            });
+            const createdPath = await createDaggerApp(context, targetDir, msg.payload);
             if (createdPath) {
               const open = await vscode.window.showInformationMessage(
                 `dagger.js application created at ${createdPath}`, 'Open folder'
@@ -46,8 +42,8 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(createdPath), true);
               }
             }
-          } catch (err: any) {
-            vscode.window.showErrorMessage(`Failed to create application: ${err?.message || String(err)}`);
+          } catch (err) {
+            vscode.window.showErrorMessage(`Failed to create application: ${ err?.message || err }`);
           }
         }
       });
@@ -72,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
   }
   const structure = configs.structure;
-  const resolvedStructure: Record<string, string> = {};
+  const resolvedStructure = {};
   Object.keys(structure).forEach(key => {
     const relativePath = structure[key];
     if (relativePath) {
@@ -86,12 +82,12 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      'dagger.explorer.parseFolder', async (uri: vscode.Uri) => {
+      'dagger.explorer.parseFolder', async (uri) => {
         console.error('parseFolder');
       }
     ),
     vscode.commands.registerCommand(
-      'dagger.explorer.parseFile', async (uri: vscode.Uri) => {
+      'dagger.explorer.parseFile', async (uri) => {
         const json = {
           role: '',
           type: '',
@@ -103,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (stats.isDirectory()) {
           json.type = 'directory';
         } else if (stats.isFile()) {
-          json.role = resolvedStructure[uri.fsPath] || '';
+          role = resolvedStructure[uri.fsPath] || '';
           json.type = 'file';
           try {
             json.content = fs.readFileSync(uri.fsPath, 'utf8');
@@ -136,7 +132,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     ),
     vscode.commands.registerCommand(
-      'dagger.explorer.createNamespace', async (uri: vscode.Uri) => {
+      'dagger.explorer.createNamespace', async (uri) => {
         vscode.window.showInputBox({
           prompt: 'Enter the name of the new namespace'
         }).then(async name => {
@@ -161,8 +157,8 @@ export function activate(context: vscode.ExtensionContext) {
               fs.writeFileSync(path.join(modulePath, 'view.html'), '');
               fs.writeFileSync(path.join(modulePath,'style.css'), '');
               fs.writeFileSync(path.join(modulePath,'script.js'), '');
-            } catch (err: any) {
-              vscode.window.showErrorMessage(`Failed to create namespace: ${err?.message || String(err)}`);
+            } catch (err) {
+              vscode.window.showErrorMessage(`Failed to create namespace: ${ err?.message || err }`);
             }
           }
         });
@@ -171,28 +167,25 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-function getHtml(panel: vscode.WebviewPanel, ctx: vscode.ExtensionContext, type: string, json?: any) {
+const getHtml = (panel, ctx, type, json) => {
   // Allow loading local resources from media/
   panel.webview.options = {
     enableScripts: true,
     localResourceRoots: [vscode.Uri.joinPath(ctx.extensionUri, 'framework'), vscode.Uri.joinPath(ctx.extensionUri, 'media')]
   };
-
   const fileRoot = vscode.Uri.joinPath(ctx.extensionUri, `media/${ type }`);
-
   // Read HTML and inject CSP source + script URI
   const html = fs.readFileSync(vscode.Uri.joinPath(fileRoot, 'index.html').fsPath, 'utf8')
     .replace(/\{\{cspSource\}\}/g, panel.webview.cspSource)
-    .replace(/\{\{scriptUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(fileRoot, 'script.js'))))
-    .replace(/\{\{styleUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(fileRoot, 'style.css'))))
+    .replace(/\{\{scriptUri\}\}/g, panel.webview.asWebviewUri(vscode.Uri.joinPath(fileRoot, 'script.js')))
+    .replace(/\{\{styleUri\}\}/g, panel.webview.asWebviewUri(vscode.Uri.joinPath(fileRoot, 'style.css')))
     .replace(/\{\{json\}\}/g, json || '')
-    // .replace(/\{\{modulesUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(fileRoot,'modules.json'))))
-    .replace(/\{\{daggerUri\}\}/g, String(panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, 'framework/dagger.release.js'))));
+    .replace(/\{\{daggerUri\}\}/g, panel.webview.asWebviewUri(vscode.Uri.joinPath(ctx.extensionUri, 'framework/dagger.release.js')));
 
   return html;
 }
 
-async function pickTargetFolder(): Promise<string | undefined> {
+const pickTargetFolder = async () => {
   const res = await vscode.window.showOpenDialog({
     canSelectMany: false,
     canSelectFiles: false,
@@ -201,4 +194,6 @@ async function pickTargetFolder(): Promise<string | undefined> {
   return res?.[0]?.fsPath;
 }
 
-export function deactivate() {}
+const deactivate = () => {};
+
+module.exports = { activate, deactivate };
